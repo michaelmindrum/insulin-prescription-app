@@ -132,6 +132,12 @@ else:  # Default for other insulins (Premixed, Short-acting, etc.)
 
 st.text_area("Suggested Prescription Wording:", prescription_text, height=220)
 
-st.markdown("""
-**Disclaimer:** This tool is intended for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider before making any medical decisions. Information provided is derived from Diabetes Canada Guidelines (accessed in 2024). The app at this time does not include a complete list of all insulins. The author of this tool assumes no responsibility for any clinical decisions made based on the generated prescription guidance. The overall intent of the app is to allow providers a tool to offer a prescription to patients that allow them to have access to three months of medication. The range of insulin provided in the suggestion is to allow flexibility for the patient to adjust their insulin to achieve fasting and post-prandial glucose control. The range of insulin doses should not be thought of as prescriptive. Patients may increase or decrease the dose of insulin based upon their knowledge and supported by the care team including NP's, physicians, pharmacists, and diabetes educators. 
-""")
+# Disclaimer in a dropdown
+with st.expander("Disclaimer"):
+    st.markdown(
+        """
+        **Disclaimer:** This tool is intended for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. 
+        Always consult a qualified healthcare provider before making any medical decisions. 
+        The authors of this tool assume no responsibility for any clinical decisions made based on the generated prescription guidance.
+        """
+    )
