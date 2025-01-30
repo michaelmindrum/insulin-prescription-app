@@ -90,6 +90,7 @@ else:
     boxes_needed = n_devices  # Vials are individual, no boxes
 
 # Suggested prescription wording
+# Suggested prescription wording
 if insulin_type in RAPID_ACTING_INSULINS:
     meal_dose = round(tdd / 3)  # Divide TDD into 3 for meals
     meal_range_low = max(1, round(meal_dose * 0.5))  # 50% flexibility
@@ -106,7 +107,8 @@ if insulin_type in RAPID_ACTING_INSULINS:
         f"Quantity: {required_units} units total\n"
         f"Duration: 90 days (3-month supply)"
     )
-    elif insulin_type in LONG_ACTING_INSULINS:
+
+elif insulin_type in LONG_ACTING_INSULINS:
     titration_instruction = (
         "Increase dose by 2-4 units every week until fasting blood glucose reaches target (4-7 mmol/L)."
         if insulin_type == "Tresiba"
@@ -117,6 +119,16 @@ if insulin_type in RAPID_ACTING_INSULINS:
         f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
         f"(each containing {device_capacity} units)\n"
         f"Directions: Start at {tdd} units at bedtime. {titration_instruction}\n"
+        f"Quantity: {required_units} units total\n"
+        f"Duration: 90 days (3-month supply)"
+    )
+
+else:  # Default for other insulins (Premixed, Short-acting, etc.)
+    prescription_text = (
+        f"Rx: {insulin_type} {concentration}\n"
+        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
+        f"(each containing {device_capacity} units)\n"
+        f"Directions: Use {tdd} units per day as directed.\n"
         f"Quantity: {required_units} units total\n"
         f"Duration: 90 days (3-month supply)"
     )
