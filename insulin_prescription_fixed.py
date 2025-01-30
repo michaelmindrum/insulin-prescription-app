@@ -104,7 +104,7 @@ if insulin_type in RAPID_ACTING_INSULINS:  # Prandial (bolus) insulin
         f"(each containing {device_capacity} units)\n"
         f"Directions: Give {meal_range_low}-{meal_range_high} units before each meal. "
         f"Adjust dose based on carbohydrate intake and post-prandial glucose target of 5-10 mmol/L.\n"
-        f"As needed: {snack_dose}-{snack_range_high} units for snacks to maintain post-prandial glucose of 5-10 mmol/L.\n"
+        f"As needed: {snack_dose}-{snack_range_high} units for snacks as a start and adjust dose based upon carbohydrate intake and response to achieve post-prandial glucose of 5-10 mmol/L.\n"
         f"Quantity: {required_units} units total\n"
         f"Duration: 90 days (3-month supply)"
     )
