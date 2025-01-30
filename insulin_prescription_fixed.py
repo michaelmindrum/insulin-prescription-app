@@ -12,6 +12,8 @@ RAPID_ACTING_INSULINS = {"Trurapi", "NovoRapid", "Humalog", "Apidra", "Fiasp"}
 
 # Process insulin data into dictionary format
 INSULIN_OPTIONS = {}
+LONG_ACTING_OPTIONS = {}
+RAPID_ACTING_OPTIONS = {}
 
 for _, row in df.iterrows():
     insulin_type = row["Insulin Type"]
@@ -26,11 +28,18 @@ for _, row in df.iterrows():
     device_capacity = row["Amount/Device"]
     
     if pd.notna(insulin_type) and pd.notna(concentration) and pd.notna(device_type) and pd.notna(device_capacity):
-        if insulin_type not in INSULIN_OPTIONS:
-            INSULIN_OPTIONS[insulin_type] = {}
-        if concentration not in INSULIN_OPTIONS[insulin_type]:
-            INSULIN_OPTIONS[insulin_type][concentration] = {}
-        INSULIN_OPTIONS[insulin_type][concentration][device_type] = device_capacity
+        if insulin_type in LONG_ACTING_INSULINS:
+            if insulin_type not in LONG_ACTING_OPTIONS:
+                LONG_ACTING_OPTIONS[insulin_type] = {}
+            if concentration not in LONG_ACTING_OPTIONS[insulin_type]:
+                LONG_ACTING_OPTIONS[insulin_type][concentration] = {}
+            LONG_ACTING_OPTIONS[insulin_type][concentration][device_type] = device_capacity
+        elif insulin_type in RAPID_ACTING_INSULINS:
+            if insulin_type not in RAPID_ACTING_OPTIONS:
+                RAPID_ACTING_OPTIONS[insulin_type] = {}
+            if concentration not in RAPID_ACTING_OPTIONS[insulin_type]:
+                RAPID_ACTING_OPTIONS[insulin_type][concentration] = {}
+            RAPID_ACTING_OPTIONS[insulin_type][concentration][device_type] = device_capacity
 
 # Streamlit UI
 st.title("Insulin Prescription Calculator")
@@ -49,15 +58,28 @@ else:
 
 col1, col2 = st.columns(2)
 with col1:
-    insulin_type = st.selectbox("Select Insulin Type", list(INSULIN_OPTIONS.keys()))
+    insulin_category = st.radio("Select Insulin Category", ["Long-Acting", "Rapid-Acting"])
+    if insulin_category == "Long-Acting":
+        insulin_type = st.selectbox("Select Long-Acting Insulin", list(LONG_ACTING_OPTIONS.keys()))
+    else:
+        insulin_type = st.selectbox("Select Rapid-Acting Insulin", list(RAPID_ACTING_OPTIONS.keys()))
+
 with col2:
-    concentration = st.selectbox("Select Concentration", list(INSULIN_OPTIONS[insulin_type].keys()))
-    device_type = st.selectbox("Select Device Type", list(INSULIN_OPTIONS[insulin_type][concentration].keys()))
+    if insulin_category == "Long-Acting":
+        concentration = st.selectbox("Select Concentration", list(LONG_ACTING_OPTIONS[insulin_type].keys()))
+        device_type = st.selectbox("Select Device Type", list(LONG_ACTING_OPTIONS[insulin_type][concentration].keys()))
+    else:
+        concentration = st.selectbox("Select Concentration", list(RAPID_ACTING_OPTIONS[insulin_type].keys()))
+        device_type = st.selectbox("Select Device Type", list(RAPID_ACTING_OPTIONS[insulin_type][concentration].keys()))
 
 # Calculate total required insulin for 90 days
 required_units = tdd * 90
 
-device_capacity = INSULIN_OPTIONS[insulin_type][concentration][device_type]
+device_capacity = (
+    LONG_ACTING_OPTIONS[insulin_type][concentration][device_type]
+    if insulin_category == "Long-Acting"
+    else RAPID_ACTING_OPTIONS[insulin_type][concentration][device_type]
+)
 n_devices = math.ceil(required_units / device_capacity)
 
 # Determine packaging (assuming pens/cartridges come in boxes of 5, vials have no boxes)
@@ -74,49 +96,5 @@ st.write("**3 Month Supply**")
 st.write(f"### **Total Insulin Needed:** {required_units} units")
 st.write(f"### **Number of {device_type}s Needed:** {n_devices}")
 st.write(f"### **Boxes Required (if applicable):** {boxes_needed}")
-
-# Suggested prescription wording
-if insulin_type == "Tresiba":  # Special case for Tresiba
-    prescription_text = (
-        f"Rx: {insulin_type} {concentration}\n"
-        f"Dispense: {n_devices} {device_type.lower()}(s) "
-        f"(each containing {device_capacity} units)\n"
-        f"Directions: Start at {tdd} units at bedtime. "
-        f"Increase dose by 2-4 units every week until fasting blood glucose reaches target (4-7 mmol/L).\n"
-        f"Quantity: {required_units} units total\n"
-        f"Duration: 90 days (3-month supply)"
-    )
-elif insulin_type in LONG_ACTING_INSULINS:  # Other long-acting insulins
-    prescription_text = (
-        f"Rx: {insulin_type} {concentration}\n"
-        f"Dispense: {n_devices} {device_type.lower()}(s) "
-        f"(each containing {device_capacity} units)\n"
-        f"Directions: Start at {tdd} units at bedtime. "
-        f"Increase dose by 1 unit every night until fasting blood glucose reaches target (4-7 mmol/L).\n"
-        f"Quantity: {required_units} units total\n"
-        f"Duration: 90 days (3-month supply)"
-    )
-elif insulin_type in RAPID_ACTING_INSULINS:  # Prandial (bolus) insulin
-    meal_dose = round(tdd * 0.2)  # 20% of TDD per meal
-    snack_dose = max(1, round(meal_dose * 0.5))  # Snack dose, minimum 1 unit
-    prescription_text = (
-        f"Rx: {insulin_type} {concentration}\n"
-        f"Dispense: {n_devices} {device_type.lower()}(s) "
-        f"(each containing {device_capacity} units)\n"
-        f"Directions: Give {meal_dose} units before each meal. "
-        f"Adjust dose to achieve post-prandial glucose of 5-10 mmol/L per directed scale.\n"
-        f"As needed: start with {snack_dose}-{meal_dose} units for snacks to maintain post-prandial glucose of 5-10 mmol/L; adjust as needed to achieve target.\n"
-        f"Quantity: {required_units} units total\n"
-        f"Duration: 90 days (3-month supply)"
-    )
-else:  # Default for other insulins (Premixed, Short-acting, etc.)
-    prescription_text = (
-        f"Rx: {insulin_type} {concentration}\n"
-        f"Dispense: {n_devices} {device_type.lower()}(s) "
-        f"(each containing {device_capacity} units)\n"
-        f"Directions: Use {tdd} units per day as directed.\n"
-        f"Quantity: {required_units} units total\n"
-        f"Duration: 90 days (3-month supply)"
-    )
 
 st.text_area("Suggested Prescription Wording:", prescription_text, height=140)
