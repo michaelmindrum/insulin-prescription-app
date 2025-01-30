@@ -103,7 +103,7 @@ if is_new_rx == "Yes" and insulin_type in RAPID_ACTING_INSULINS:
         f"(each containing {device_capacity} units)\n"
         f"Directions: Give {meal_range_low}-{meal_range_high} units before each meal. "
         f"Adjust dose based on carbohydrate intake and post-prandial glucose target of 5-10 mmol/L.\n"
-        f"As needed: {snack_dose_low}-{snack_dose_high} units, adjusted based on carbohydrate intake and insulin sensitivity to achieve post-snack glucose of 5-10 mmol/L.\n"
+        f"As needed: {snack_dose_low}-{snack_dose_high} units, may adjust higher based on carbohydrate intake and insulin sensitivity to achieve post-snack glucose of 5-10 mmol/L.\n"
         f"Quantity: {required_units} units total\n"
         f"Duration: 90 days (3-month supply)"
     )
