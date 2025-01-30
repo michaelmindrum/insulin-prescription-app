@@ -65,6 +65,7 @@ st.write(f"### **Boxes Required (if applicable):** {boxes_needed}")
 # Suggested prescription wording
 prescription_text = (
   # Suggested prescription wording
+# Suggested prescription wording
 if "Basal" in insulin_type:  # Long-acting insulin
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
@@ -99,4 +100,3 @@ else:  # Default for other insulins (Premixed, Short-acting, etc.)
     )
 
 st.text_area("Suggested Prescription Wording:", prescription_text, height=140)
-
