@@ -116,20 +116,18 @@ elif insulin_type in LONG_ACTING_INSULINS:
     )
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
-        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
-        f"(each containing {device_capacity} units)\n"
         f"Directions: Start at {tdd} units at bedtime. {titration_instruction}\n"
         f"Quantity: {required_units} units total\n"
+        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
         f"Duration: 90 days (3-month supply)"
     )
 
 else:  # Default for other insulins (Premixed, Short-acting, etc.)
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
-        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
-        f"(each containing {device_capacity} units)\n"
         f"Directions: Use {tdd} units per day as directed.\n"
         f"Quantity: {required_units} units total\n"
+        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
         f"Duration: 90 days (3-month supply)"
     )
 
