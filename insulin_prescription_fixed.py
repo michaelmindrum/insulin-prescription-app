@@ -3,7 +3,7 @@ import math
 import pandas as pd
 
 # Load insulin data from Excel file
-file_path = "/Users/mmindrum1/Documents/gpt-project/Insulin_Rx.xlsx"
+file_path = "Insulin_Rx.xlsx"
 df = pd.read_excel(file_path, sheet_name="Sheet1")
 
 # Process insulin data into dictionary format
