@@ -6,6 +6,10 @@ import pandas as pd
 file_path = "Insulin_Rx.xlsx"
 df = pd.read_excel(file_path, sheet_name="Sheet1")
 
+# Define insulin types
+LONG_ACTING_INSULINS = {"Tresiba", "Toujeo", "Lantus", "Basaglar", "Levemir"}
+RAPID_ACTING_INSULINS = {"Trurapi", "NovoRapid", "Humalog", "Apidra", "Fiasp"}
+
 # Process insulin data into dictionary format
 INSULIN_OPTIONS = {}
 
@@ -55,7 +59,6 @@ else:
 
 # Display Results
 st.subheader("Prescription Details")
-# Add the 3-month supply text here
 st.write("**3 Month Supply**")
 
 st.write(f"### **Total Insulin Needed:** {required_units} units")
@@ -63,7 +66,17 @@ st.write(f"### **Number of {device_type}s Needed:** {n_devices}")
 st.write(f"### **Boxes Required (if applicable):** {boxes_needed}")
 
 # Suggested prescription wording
-if "Basal" in insulin_type:  # Long-acting insulin
+if insulin_type == "Tresiba":  # Special case for Tresiba
+    prescription_text = (
+        f"Rx: {insulin_type} {concentration}\n"
+        f"Dispense: {n_devices} {device_type.lower()}(s) "
+        f"(each containing {device_capacity} units)\n"
+        f"Directions: Start at {tdd} units at bedtime. "
+        f"Increase dose by 2-4 units every week until fasting blood glucose reaches target (4-7 mmol/L).\n"
+        f"Quantity: {required_units} units total\n"
+        f"Duration: 90 days (3-month supply)"
+    )
+elif insulin_type in LONG_ACTING_INSULINS:  # Other long-acting insulins
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
         f"Dispense: {n_devices} {device_type.lower()}(s) "
@@ -73,7 +86,7 @@ if "Basal" in insulin_type:  # Long-acting insulin
         f"Quantity: {required_units} units total\n"
         f"Duration: 90 days (3-month supply)"
     )
-elif "Rapid" in insulin_type:  # Prandial (bolus) insulin
+elif insulin_type in RAPID_ACTING_INSULINS:  # Prandial (bolus) insulin
     meal_dose = round(tdd * 0.2)  # 20% of TDD per meal
     snack_dose = max(1, round(meal_dose * 0.5))  # Snack dose, minimum 1 unit
     prescription_text = (
@@ -81,8 +94,8 @@ elif "Rapid" in insulin_type:  # Prandial (bolus) insulin
         f"Dispense: {n_devices} {device_type.lower()}(s) "
         f"(each containing {device_capacity} units)\n"
         f"Directions: Give {meal_dose} units before each meal. "
-        f"Adjust dose based on blood glucose levels per directed scale.\n"
-        f"As needed: {snack_dose}-{meal_dose} units for snacks to maintain post-prandial glucose <10 mmol/L.\n"
+        f"Adjust dose to achieve post-prandial glucose of 5-10 mmol/L per directed scale.\n"
+        f"As needed: {snack_dose}-{meal_dose} units for snacks to maintain post-prandial glucose of 5-10 mmol/L.\n"
         f"Quantity: {required_units} units total\n"
         f"Duration: 90 days (3-month supply)"
     )
