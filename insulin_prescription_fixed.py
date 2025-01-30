@@ -89,55 +89,23 @@ if "Pen" in device_type or "Cartridge" in device_type:
 else:
     boxes_needed = "N/A"  # Vials are individual, no boxes
 
-# Display Results
-st.subheader("Prescription Details")
-st.write("**3 Month Supply**")
-
-st.write(f"### **Total Insulin Needed:** {required_units} units")
-st.write(f"### **Number of {device_type}s Needed:** {n_devices}")
-st.write(f"### **Boxes Required (if applicable):** {boxes_needed}")
-
 # Suggested prescription wording
-if insulin_type == "Tresiba":  # Special case for Tresiba
+if insulin_type in RAPID_ACTING_INSULINS:  # Prandial (bolus) insulin
+    meal_dose = round(tdd / 3)  # Divide TDD into 3 for meals
+    meal_range_low = max(1, round(meal_dose * 0.5))  # 50% of meal dose for flexibility
+    meal_range_high = meal_dose + meal_range_low  # Upper range
+    snack_dose = max(1, round(meal_dose * 0.2))  # 20% of meal dose for snacks
+    snack_range_high = snack_dose + max(1, round(snack_dose * 0.5))
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
         f"Dispense: {n_devices} {device_type.lower()}(s) "
         f"(each containing {device_capacity} units)\n"
-        f"Directions: Start at {tdd} units at bedtime. "
-        f"Increase dose by 2-4 units every week until fasting blood glucose reaches target (4-7 mmol/L).\n"
+        f"Directions: Give {meal_range_low}-{meal_range_high} units before each meal. "
+        f"Adjust dose based on carbohydrate intake and post-prandial glucose target of 5-10 mmol/L.\n"
+        f"As needed: {snack_dose}-{snack_range_high} units for snacks to maintain post-prandial glucose of 5-10 mmol/L.\n"
         f"Quantity: {required_units} units total\n"
         f"Duration: 90 days (3-month supply)"
     )
-elif insulin_type in LONG_ACTING_INSULINS:  # Other long-acting insulins
-    prescription_text = (
-        f"Rx: {insulin_type} {concentration}\n"
-        f"Dispense: {n_devices} {device_type.lower()}(s) "
-        f"(each containing {device_capacity} units)\n"
-        f"Directions: Start at {tdd} units at bedtime. "
-        f"Increase dose by 1 unit every night until fasting blood glucose reaches target (4-7 mmol/L).\n"
-        f"Quantity: {required_units} units total\n"
-        f"Duration: 90 days (3-month supply)"
-    )
-elif insulin_type in RAPID_ACTING_INSULINS:  # Prandial (bolus) insulin
-    meal_dose = round(tdd * 0.2)  # 20% of TDD per meal
-    snack_dose = max(1, round(meal_dose * 0.5))  # Snack dose, minimum 1 unit
-    prescription_text = (
-        f"Rx: {insulin_type} {concentration}\n"
-        f"Dispense: {n_devices} {device_type.lower()}(s) "
-        f"(each containing {device_capacity} units)\n"
-        f"Directions: Give {meal_dose} units before each meal. "
-        f"Adjust dose to achieve post-prandial glucose of 5-10 mmol/L per directed scale.\n"
-        f"As needed: {snack_dose}-{meal_dose} units for snacks to maintain post-prandial glucose of 5-10 mmol/L.\n"
-        f"Quantity: {required_units} units total\n"
-        f"Duration: 90 days (3-month supply)"
-    )
-else:  # Default for other insulins (Premixed, Short-acting, etc.)
-    prescription_text = (
-        f"Rx: {insulin_type} {concentration}\n"
-        f"Dispense: {n_devices} {device_type.lower()}(s) "
-        f"(each containing {device_capacity} units)\n"
-        f"Directions: Use {tdd} units per day as directed.\n"
-        f"Quantity: {required_units} units total\n"
-        f"Duration: 90 days (3-month supply)"
-    )
+
 st.text_area("Suggested Prescription Wording:", prescription_text, height=140)
+
