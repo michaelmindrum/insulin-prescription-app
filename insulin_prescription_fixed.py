@@ -106,5 +106,19 @@ if insulin_type in RAPID_ACTING_INSULINS:
         f"Quantity: {required_units} units total\n"
         f"Duration: 90 days (3-month supply)"
     )
+    elif insulin_type in LONG_ACTING_INSULINS:
+    titration_instruction = (
+        "Increase dose by 2-4 units every week until fasting blood glucose reaches target (4-7 mmol/L)."
+        if insulin_type == "Tresiba"
+        else "Increase dose by 1 unit every night until fasting blood glucose reaches target (4-7 mmol/L)."
+    )
+    prescription_text = (
+        f"Rx: {insulin_type} {concentration}\n"
+        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
+        f"(each containing {device_capacity} units)\n"
+        f"Directions: Start at {tdd} units at bedtime. {titration_instruction}\n"
+        f"Quantity: {required_units} units total\n"
+        f"Duration: 90 days (3-month supply)"
+    )
 
 st.text_area("Suggested Prescription Wording:", prescription_text, height=220)
