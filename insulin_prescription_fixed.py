@@ -90,27 +90,26 @@ else:
     boxes_needed = n_devices  # Vials are individual, no boxes
 
 # Suggested prescription wording
-prescription_text = (
-    f"Rx: {insulin_type} {concentration}\n"
-    f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s) "
-    f"(each containing {device_capacity} units)\n"
-    f"Directions: Use as directed.\n"
-    f"Quantity: {required_units} units total\n"
-    f"Duration: 90 days (3-month supply)"
-)
-if "Pen" in device_type or "Cartridge" in device_type:
+if is_new_rx == "Yes" and insulin_type in RAPID_ACTING_INSULINS:
+    meal_dose = round(weight * 0.1)  # Weight-based dosing for meals
+    meal_range_low = max(1, round(meal_dose * 0.5))  # 50% flexibility
+    meal_range_high = meal_dose + meal_range_low
+    snack_dose = max(1, round(meal_dose * 0.2))
+    snack_range_high = snack_dose + max(1, round(snack_dose * 0.5))
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
         f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s) "
         f"(each containing {device_capacity} units)\n"
-        f"Directions: Use as directed.\n"
+        f"Directions: Give {meal_range_low}-{meal_range_high} units before each meal. "
+        f"Adjust dose based on carbohydrate intake and post-prandial glucose target of 5-10 mmol/L.\n"
+        f"As needed: {snack_dose}-{snack_range_high} units for snacks to maintain post-prandial glucose of 5-10 mmol/L.\n"
         f"Quantity: {required_units} units total\n"
         f"Duration: 90 days (3-month supply)"
     )
-else:  # Handling vials (no boxes)
+else:
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
-        f"Dispense: {n_devices} {device_type.lower()}(s) "
+        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s) "
         f"(each containing {device_capacity} units)\n"
         f"Directions: Use as directed.\n"
         f"Quantity: {required_units} units total\n"
