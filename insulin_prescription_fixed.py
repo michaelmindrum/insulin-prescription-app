@@ -90,12 +90,14 @@ else:
     boxes_needed = "N/A"  # Vials are individual, no boxes
 
 # Suggested prescription wording
+# Suggested prescription wording
 if insulin_type in RAPID_ACTING_INSULINS:  # Prandial (bolus) insulin
     meal_dose = round(tdd / 3)  # Divide TDD into 3 for meals
     meal_range_low = max(1, round(meal_dose * 0.5))  # 50% of meal dose for flexibility
     meal_range_high = meal_dose + meal_range_low  # Upper range
     snack_dose = max(1, round(meal_dose * 0.2))  # 20% of meal dose for snacks
     snack_range_high = snack_dose + max(1, round(snack_dose * 0.5))
+
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
         f"Dispense: {n_devices} {device_type.lower()}(s) "
@@ -107,5 +109,32 @@ if insulin_type in RAPID_ACTING_INSULINS:  # Prandial (bolus) insulin
         f"Duration: 90 days (3-month supply)"
     )
 
+elif insulin_type in LONG_ACTING_INSULINS:  # Basal insulin
+    if insulin_type == "Tresiba":
+        titration_instruction = "Increase dose by 2-4 units every week"
+    else:
+        titration_instruction = "Increase dose by 1 unit every night"
+
+    prescription_text = (
+        f"Rx: {insulin_type} {concentration}\n"
+        f"Dispense: {n_devices} {device_type.lower()}(s) "
+        f"(each containing {device_capacity} units)\n"
+        f"Directions: Start at {tdd} units at bedtime. "
+        f"{titration_instruction} until fasting blood glucose reaches target (4-7 mmol/L).\n"
+        f"Quantity: {required_units} units total\n"
+        f"Duration: 90 days (3-month supply)"
+    )
+
+else:  # Default for other insulins (Premixed, Short-acting, etc.)
+    prescription_text = (
+        f"Rx: {insulin_type} {concentration}\n"
+        f"Dispense: {n_devices} {device_type.lower()}(s) "
+        f"(each containing {device_capacity} units)\n"
+        f"Directions: Use {tdd} units per day as directed.\n"
+        f"Quantity: {required_units} units total\n"
+        f"Duration: 90 days (3-month supply)"
+    )
+
+# Now, `prescription_text` is always assigned before being used
 st.text_area("Suggested Prescription Wording:", prescription_text, height=140)
 
