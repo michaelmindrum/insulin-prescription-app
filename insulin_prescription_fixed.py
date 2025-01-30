@@ -36,9 +36,19 @@ for _, row in df.iterrows():
 st.title("Insulin Prescription Calculator")
 
 # User Inputs
+is_new_rx = st.radio("Is this a new insulin prescription?", ["Yes", "No"])
+
+if is_new_rx == "Yes":
+    weight = st.number_input("Enter patient weight (kg):", min_value=10, max_value=200, value=70)
+    if weight < 50:
+        tdd = round(weight * 0.2)  # Weight-based dosing for <50kg
+    else:
+        tdd = 10  # Default starting dose for basal insulin
+else:
+    tdd = st.number_input("Total Daily Dose (units per day)", min_value=1, value=50)
+
 col1, col2 = st.columns(2)
 with col1:
-    tdd = st.number_input("Total Daily Dose (units per day)", min_value=1, value=50)
     insulin_type = st.selectbox("Select Insulin Type", list(INSULIN_OPTIONS.keys()))
 with col2:
     concentration = st.selectbox("Select Concentration", list(INSULIN_OPTIONS[insulin_type].keys()))
