@@ -95,8 +95,9 @@ if is_new_rx == "Yes" and insulin_type in RAPID_ACTING_INSULINS:
     meal_dose = round(weight * 0.1)  # Weight-based dosing for meals
     meal_range_low = max(1, round(meal_dose * 0.5))  # 50% flexibility
     meal_range_high = meal_dose + meal_range_low
-    snack_dose = max(1, round(meal_dose * 0.2))
-    snack_range_high = snack_dose + max(1, round(snack_dose * 0.5))
+    snack_dose_low = max(1, round(meal_dose * 0.25))  # 25% of meal dose
+    snack_dose_high = max(1, round(meal_dose * 0.75))  # 75% of meal dose
+
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
         f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
