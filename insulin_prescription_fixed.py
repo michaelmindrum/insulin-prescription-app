@@ -98,7 +98,6 @@ if is_new_rx == "Yes" and insulin_type in RAPID_ACTING_INSULINS:
     snack_range_high = snack_dose + max(1, round(snack_dose * 0.5))
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
-        f"(each containing {device_capacity} units)\n"
         f"Directions: Give {meal_range_low}-{meal_range_high} units before each meal. "
         f"Adjust dose based on carbohydrate intake and post-prandial glucose target of 5-10 mmol/L.\n"
         f"As needed: {snack_dose}-{snack_range_high} units for snacks to maintain post-prandial glucose of 5-10 mmol/L.\n"
@@ -110,7 +109,6 @@ elif insulin_type in LONG_ACTING_INSULINS:
     titration_instruction = "Increase dose by 2-4 units every week until fasting blood glucose reaches target (4-7 mmol/L)." if insulin_type == "Tresiba" else "Increase dose by 1 unit every night until fasting blood glucose reaches target (4-7 mmol/L)."
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
-        f"(each containing {device_capacity} units)\n"
         f"Directions: Start at {tdd} units at bedtime. {titration_instruction}\n"
         f"Quantity: {required_units} units total\n"
          f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s) "
