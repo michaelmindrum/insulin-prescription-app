@@ -97,7 +97,6 @@ st.write(f"### **Total Insulin Needed:** {required_units} units")
 st.write(f"### **Number of {device_type}s Needed:** {n_devices}")
 st.write(f"### **Boxes Required (if applicable):** {boxes_needed}")
 
-st.text_area("Suggested Prescription Wording:", prescription_text, height=140)
 # Suggested prescription wording
 if insulin_type == "Tresiba":  # Special case for Tresiba
     prescription_text = (
@@ -141,3 +140,4 @@ else:  # Default for other insulins (Premixed, Short-acting, etc.)
         f"Quantity: {required_units} units total\n"
         f"Duration: 90 days (3-month supply)"
     )
+st.text_area("Suggested Prescription Wording:", prescription_text, height=140)
