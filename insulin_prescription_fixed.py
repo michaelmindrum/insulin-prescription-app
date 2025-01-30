@@ -64,8 +64,39 @@ st.write(f"### **Boxes Required (if applicable):** {boxes_needed}")
 
 # Suggested prescription wording
 prescription_text = (
-    f"Dispense {n_devices} {device_type.lower()}(s) of {insulin_type} {concentration}, "
-    f"each containing {device_capacity} units. Use {tdd} units per day. "
-    "Duration: 90 days."
-)
-st.text_area("Suggested Prescription Wording:", prescription_text, height=100)
+  # Suggested prescription wording
+if "Basal" in insulin_type:  # Long-acting insulin
+    prescription_text = (
+        f"Rx: {insulin_type} {concentration}\n"
+        f"Dispense: {n_devices} {device_type.lower()}(s) "
+        f"(each containing {device_capacity} units)\n"
+        f"Directions: Start at {tdd} units at bedtime. "
+        f"Increase dose by 1 unit every night until fasting blood glucose reaches target (4-7 mmol/L).\n"
+        f"Quantity: {required_units} units total\n"
+        f"Duration: 90 days (3-month supply)"
+    )
+elif "Rapid" in insulin_type:  # Prandial (bolus) insulin
+    meal_dose = round(tdd * 0.2)  # 20% of TDD per meal
+    snack_dose = max(1, round(meal_dose * 0.5))  # Snack dose, minimum 1 unit
+    prescription_text = (
+        f"Rx: {insulin_type} {concentration}\n"
+        f"Dispense: {n_devices} {device_type.lower()}(s) "
+        f"(each containing {device_capacity} units)\n"
+        f"Directions: Give {meal_dose} units before each meal. "
+        f"Adjust dose based on blood glucose levels per directed scale.\n"
+        f"As needed: {snack_dose}-{meal_dose} units for snacks to maintain post-prandial glucose <10 mmol/L.\n"
+        f"Quantity: {required_units} units total\n"
+        f"Duration: 90 days (3-month supply)"
+    )
+else:  # Default for other insulins (Premixed, Short-acting, etc.)
+    prescription_text = (
+        f"Rx: {insulin_type} {concentration}\n"
+        f"Dispense: {n_devices} {device_type.lower()}(s) "
+        f"(each containing {device_capacity} units)\n"
+        f"Directions: Use {tdd} units per day as directed.\n"
+        f"Quantity: {required_units} units total\n"
+        f"Duration: 90 days (3-month supply)"
+    )
+
+st.text_area("Suggested Prescription Wording:", prescription_text, height=140)
+
