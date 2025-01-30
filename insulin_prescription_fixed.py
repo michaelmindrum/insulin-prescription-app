@@ -136,5 +136,5 @@ else:  # Default for other insulins (Premixed, Short-acting, etc.)
     )
 
 # Now, `prescription_text` is always assigned before being used
-st.text_area("Suggested Prescription Wording:", prescription_text, height=140)
+st.text_area("Suggested Prescription Wording:", prescription_text, height=200)
 
