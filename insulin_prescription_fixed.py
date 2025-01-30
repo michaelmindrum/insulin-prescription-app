@@ -117,5 +117,11 @@ elif insulin_type in LONG_ACTING_INSULINS:
 
 st.text_area("Suggested Prescription Wording:", prescription_text, height=220)
 
+# Disclaimer
+st.markdown("""
+**Disclaimer:** This tool is intended for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. 
+Always consult a qualified healthcare provider before making any medical decisions. 
+The authors of this tool assume no responsibility for any clinical decisions made based on the generated prescription guidance.
+""")
 
 
