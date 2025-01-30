@@ -3,7 +3,7 @@ import math
 import pandas as pd
 
 # Load insulin data from Excel file
-file_path = "Insulin_Rx.xlsx"
+file_path = "/Users/mmindrum1/Documents/gpt-project/Insulin_Rx.xlsx"
 df = pd.read_excel(file_path, sheet_name="Sheet1")
 
 # Process insulin data into dictionary format
@@ -55,6 +55,9 @@ else:
 
 # Display Results
 st.subheader("Prescription Details")
+# Add the 3-month supply text here
+st.write("**3 Month Supply**")
+
 st.write(f"### **Total Insulin Needed:** {required_units} units")
 st.write(f"### **Number of {device_type}s Needed:** {n_devices}")
 st.write(f"### **Boxes Required (if applicable):** {boxes_needed}")
