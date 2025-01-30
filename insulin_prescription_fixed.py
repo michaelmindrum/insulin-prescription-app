@@ -111,7 +111,7 @@ elif insulin_type in LONG_ACTING_INSULINS:
         f"Rx: {insulin_type} {concentration}\n"
         f"Directions: Start at {tdd} units at bedtime. {titration_instruction}\n"
         f"Quantity: {required_units} units total\n"
-         f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s) "
+        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)"
         f"Duration: 90 days (3-month supply)"
     )
 
