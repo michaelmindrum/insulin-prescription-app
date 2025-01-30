@@ -102,7 +102,7 @@ if is_new_rx == "Yes" and insulin_type in RAPID_ACTING_INSULINS:
         f"Adjust dose based on carbohydrate intake and post-prandial glucose target of 5-10 mmol/L.\n"
         f"As needed: {snack_dose}-{snack_range_high} units for snacks to maintain post-prandial glucose of 5-10 mmol/L.\n"
         f"Quantity: {required_units} units total\n"
-        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s) "
+        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
         f"Duration: 90 days (3-month supply)"
     )
 elif insulin_type in LONG_ACTING_INSULINS:
@@ -111,7 +111,7 @@ elif insulin_type in LONG_ACTING_INSULINS:
         f"Rx: {insulin_type} {concentration}\n"
         f"Directions: Start at {tdd} units at bedtime. {titration_instruction}\n"
         f"Quantity: {required_units} units total\n"
-        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)"
+        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
         f"Duration: 90 days (3-month supply)"
     )
 
