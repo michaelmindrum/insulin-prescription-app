@@ -81,7 +81,7 @@ device_capacity = (
     else RAPID_ACTING_OPTIONS[insulin_type][concentration][device_type]
 )
 n_devices = math.ceil(required_units / device_capacity)
-
+ 
 # Determine packaging (assuming pens/cartridges come in boxes of 5, vials have no boxes)
 if "Pen" in device_type or "Cartridge" in device_type:
     box_size = 5
