@@ -42,7 +42,7 @@ for _, row in df.iterrows():
             RAPID_ACTING_OPTIONS[insulin_type][concentration][device_type] = device_capacity
 
 # Streamlit UI
-st.title("Insulin Prescription Calculator")
+st.title("Insulin Rx Guide")
 
 # User Inputs
 is_new_rx = st.radio("Is this a new insulin prescription?", ["Yes", "No"])
