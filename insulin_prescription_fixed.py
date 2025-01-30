@@ -105,7 +105,7 @@ elif insulin_type in RAPID_ACTING_INSULINS:  # Prandial (bolus) insulin
         f"(each containing {device_capacity} units)\n"
         f"Directions: Give {meal_dose} units before each meal. "
         f"Adjust dose to achieve post-prandial glucose of 5-10 mmol/L per directed scale.\n"
-        f"As needed: {snack_dose}-{meal_dose} units for snacks to maintain post-prandial glucose of 5-10 mmol/L.\n"
+        f"As needed: start with {snack_dose}-{meal_dose} units for snacks to maintain post-prandial glucose of 5-10 mmol/L; adjust as needed to achieve target.\n"
         f"Quantity: {required_units} units total\n"
         f"Duration: 90 days (3-month supply)"
     )
