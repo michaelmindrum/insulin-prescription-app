@@ -90,7 +90,6 @@ else:
     boxes_needed = n_devices  # Vials are individual, no boxes
 
 # Suggested prescription wording
-# Suggested prescription wording
 if is_new_rx == "Yes" and insulin_type in RAPID_ACTING_INSULINS:
     meal_dose = round(weight * 0.1)  # Weight-based dosing for meals
     meal_range_low = max(1, round(meal_dose * 0.5))  # 50% flexibility
