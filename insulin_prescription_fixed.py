@@ -169,12 +169,32 @@ with st.expander("App Logic Explanation"):
         3. **Titration Increment Adjustment:**
             - Specific insulins have a 2-unit titration increment.
         4. **Dose Calculations:**
-            - Rapid-Acting Insulin: Meal dose, snack dose, total required units for 90 days
-            - Standard Long-Acting Insulin: Starting dose, titration increments, total required units for 90 days
-            - Ultra Long-Acting Insulin: Starting dose for Awiqli users, weekly unit requirements, total required units for 90 days
+            - **Rapid-Acting Insulin:**
+                - Meal dose: TDD / 3, rounded to the nearest 10
+                - Meal range: 50% to 150% of the meal dose
+                - Snack dose: 25% to 75% of the meal dose
+                - Total required units for 90 days: TDD * 90
+            - **Standard Long-Acting Insulin:**
+                - Starting dose: TDD (e.g., if TDD is 50 units, start with 50 units)
+                - Titration increments: 1 or 2 units per day
+                - Total required units for 90 days: TDD * 90 (e.g., 50 units/day * 90 days = 4500 units)
+            - **Ultra Long-Acting Insulin (Awiqli):**
+                - Starting dose for new users: 70 units weekly
+                - Starting dose for existing users: TDD * 7 (e.g., if TDD is 50 units, start with 50 * 7 = 350 units), potentially boosted by 1.5x if conditions are met
+                - Weekly unit requirements: TDD * 7
+                - Total required units for 90 days: TDD * 90 (e.g., 50 units/day * 90 days = 4500 units)
         5. **Packaging and Prescription Generation:**
-            - Calculate the number of devices needed based on device capacity and required units.
-            - Generate the prescription text based on the calculated doses and packaging.
+            - **Calculate the number of devices needed:**
+                - Required units: TDD * 90 (e.g., 50 units/day * 90 days = 4500 units)
+                - Device capacity: Based on selected concentration and device type
+                - Number of devices: Required units / device capacity, rounded up (e.g., if device capacity is 300 units, then 4500 / 300 = 15 devices)
+            - **Packaging:**
+                - Pens or cartridges: 5 devices per box (e.g., 15 devices / 5 = 3 boxes)
+                - Vials: Individual packaging
+            - **Prescription Text Generation:**
+                - Rapid-Acting Insulin: Includes meal dose range, snack dose range, total units, number of boxes, and duration
+                - Standard Long-Acting Insulin: Includes starting dose, titration increments, total units, number of boxes, and duration
+                - Ultra Long-Acting Insulin: Includes starting dose, weekly dose adjustments, total units, number of boxes, and duration
         """
     )
 st.markdown(
