@@ -7,7 +7,7 @@ file_path = "Insulin_Rx.xlsx"
 df = pd.read_excel(file_path, sheet_name="Sheet1")
 
 # Define insulin types
-LONG_ACTING_INSULINS = {"Tresiba", "Toujeo", "Lantus", "Basaglar", "Levemir"}
+LONG_ACTING_INSULINS = {"Tresiba", "Toujeo", "Lantus", "Basaglar", "Levemir", "Awiqli"}  # Added Awiqli
 RAPID_ACTING_INSULINS = {"Trurapi", "NovoRapid", "Humalog", "Apidra", "Fiasp"}
 
 # Process insulin data into dictionary format
@@ -50,9 +50,9 @@ is_new_rx = st.radio("Is this a new insulin prescription?", ["Yes", "No"])
 if is_new_rx == "Yes":
     weight = st.number_input("Enter patient weight (kg):", min_value=10, max_value=200, value=70)
     if weight < 50:
-        tdd = round(weight * 0.2)  # Weight-based dosing for <50kg
+        tdd = round(weight * 0.2, -1)  # Weight-based dosing for <50kg, rounded to nearest 10
     else:
-        tdd = 10  # Default starting dose for basal insulin
+        tdd = 70  # Default starting dose for basal insulin
 else:
     tdd = st.number_input("Total Daily Dose (units per day)", min_value=1, value=50)
 
@@ -72,65 +72,22 @@ with col2:
         concentration = st.selectbox("Select Concentration", list(RAPID_ACTING_OPTIONS[insulin_type].keys()))
         device_type = st.selectbox("Select Device Type", list(RAPID_ACTING_OPTIONS[insulin_type][concentration].keys()))
 
-# Calculate total required insulin for 90 days
-required_units = tdd * 90
-
-device_capacity = (
-    LONG_ACTING_OPTIONS[insulin_type][concentration][device_type]
-    if insulin_category == "Long-Acting"
-    else RAPID_ACTING_OPTIONS[insulin_type][concentration][device_type]
-)
-n_devices = math.ceil(required_units / device_capacity)
-
-# Determine packaging (assuming pens/cartridges come in boxes of 5, vials have no boxes)
-if "Pen" in device_type or "Cartridge" in device_type:
-    box_size = 5
-    boxes_needed = math.ceil(n_devices / box_size)
-else:
-    boxes_needed = n_devices  # Vials are individual, no boxes
-
-# Suggested prescription wording
-# Suggested prescription wording
-if insulin_type in RAPID_ACTING_INSULINS:
-    meal_dose = round(tdd / 3)  # Divide TDD into 3 for meals
-    meal_range_low = max(1, round(meal_dose * 0.5))  # 50% flexibility
-    meal_range_high = meal_dose + meal_range_low
-    snack_dose_low = max(1, round(meal_dose * 0.25))  # 25% of meal dose
-    snack_dose_high = max(1, round(meal_dose * 0.75))  # 75% of meal dose
-    prescription_text = (
-        f"Rx: {insulin_type} {concentration}\n"
-        f"Directions: Give {meal_range_low}-{meal_range_high} units before each meal. "
-        f"Adjust dose based on carbohydrate intake and post-prandial glucose target of 5-10 mmol/L.\n"
-        f"As needed: {snack_dose_low}-{snack_dose_high} units for snacks to maintain post-prandial glucose of 5-10 mmol/L. May adjust dose upward if needed and as directed.\n"
-        f"Quantity: {required_units} units total\n"
-        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
-        f"Duration: 90 days (3-month supply)"
-    )
-
-elif insulin_type in LONG_ACTING_INSULINS:
-    titration_instruction = (
-        "Increase dose by 2-4 units every week until fasting blood glucose reaches target (4-7 mmol/L)."
-        if insulin_type == "Tresiba"
-        else "Increase dose by 1 unit every night until fasting blood glucose reaches target (4-7 mmol/L)."
-    )
-    prescription_text = (
-        f"Rx: {insulin_type} {concentration}\n"
-        f"Directions: Start at {tdd} units at bedtime. {titration_instruction}\n"
-        f"Quantity: {required_units} units total\n"
-        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
-        f"Duration: 90 days (3-month supply)"
-    )
-
-else:  # Default for other insulins (Premixed, Short-acting, etc.)
-    prescription_text = (
-        f"Rx: {insulin_type} {concentration}\n"
-        f"Directions: Use {tdd} units per day as directed.\n"
-        f"Quantity: {required_units} units total\n"
-        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
-        f"Duration: 90 days (3-month supply)"
-    )
-
-st.text_area("Suggested Prescription Wording:", prescription_text, height=220)
+# Awiqli Special Handling
+if insulin_type == "Awiqli":
+    fbg = st.number_input("Enter Fasting Blood Glucose (mmol/L):", min_value=3.0, max_value=20.0, value=7.0)
+    prior_hypo = st.radio("Has the patient experienced hypoglycemia (BG <4.0 mmol/L) in the last month?", ["Yes", "No"])
+    
+    if is_new_rx == "Yes":
+        tdd = 70  # Default starting dose for insulin-naive patients
+    else:
+        if fbg > 10.0 and prior_hypo == "No":
+            tdd = round(tdd * 1.5, -1)  # Apply 1.5x loading dose for poorly controlled patients, rounded to nearest 10
+    
+    st.write(f"Recommended starting dose for Awiqli: {tdd} units once weekly")
+    st.write("**Titration Guidelines:**")
+    st.write("- Increase by **+20 units/week** if fasting BG >10 mmol/L")
+    st.write("- Maintain current dose if fasting BG between **4-10 mmol/L**")
+    st.write("- Reduce by **-20 units/week** if fasting BG <4 mmol/L")
 
 # Disclaimer in a dropdown
 with st.expander("Disclaimer"):
