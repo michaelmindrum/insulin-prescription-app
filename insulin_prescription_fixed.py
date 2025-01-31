@@ -68,6 +68,11 @@ options = STANDARD_LONG_ACTING_OPTIONS if insulin_category == "Standard Long-Act
 concentration = st.radio("Select Concentration", list(options[insulin_type].keys()))
 device_type = st.radio("Select Device Type", list(options[insulin_type][concentration].keys()))
 
+# Additional Awiqli-specific logic for existing basal insulin users
+if insulin_type == "Awiqli" and is_existing_insulin == "Yes":
+    has_high_bg = st.radio("Is fasting BG consistently >10 mmol/L?", ["Yes", "No"])
+    has_hypo_risk = st.radio("Is there a risk of hypoglycemia?", ["Yes", "No"])
+
 # Adjust titration increment for specific insulins
 if insulin_type in TWO_UNIT_TITRATION_INSULINS:
     titration_increment = 2
@@ -106,6 +111,17 @@ elif insulin_type in STANDARD_LONG_ACTING_INSULINS:
         f"Rx: {insulin_type} {concentration}\n"
         f"Directions: Start at {tdd} units at bedtime. Increase by {titration_increment} unit/day until fasting BG reaches 4-7 mmol/L.\n"
         f"Quantity: {required_units} units total\n"
+        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
+        f"Duration: 90 days (3-month supply)\n"
+    )
+elif insulin_type in ULTRA_LONG_ACTING_INSULINS:
+    awiqli_start_dose = tdd * 7
+    if is_existing_insulin == "Yes" and has_high_bg == "Yes" and has_hypo_risk == "No":
+        awiqli_start_dose *= 1.5  # Boost first dose if conditions met
+    prescription_text = (
+        f"Rx: {insulin_type} {concentration}\n"
+        f"Directions: Start at {awiqli_start_dose} units for the first week, then continue with {tdd * 7} units weekly.\n"
+        f"Adjust dose by ±20 units/week based on fasting BG.\n"
         f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
         f"Duration: 90 days (3-month supply)\n"
     )
