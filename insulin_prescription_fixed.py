@@ -1,15 +1,39 @@
+The code seems well-structured and functional for its intended purpose. Here are a few observations and potential improvements:
+
+1. **File Path Handling**:
+   - The `os.path.join(os.getcwd(), "Insulin_Rx.xlsx")` may not be robust if the script is run from a different directory. Consider using `__file__` to get the directory of the script.
+
+2. **Error Handling**:
+   - It would be beneficial to add error handling for file operations and data processing to manage potential issues like missing files or incorrect data formats.
+
+3. **Data Validation**:
+   - Ensure that all necessary columns exist in the Excel file and validate the data before processing to avoid runtime errors.
+
+4. **Magic Numbers**:
+   - The numbers like `70`, `0.2`, and `1` used in dose calculations could be defined as constants with descriptive names for better readability and maintainability.
+
+5. **Simplifying Dictionary Updates**:
+   - The nested dictionary updates in the for loop can be simplified using `setdefault`.
+
+Here is a slightly improved version of your code:
+
+```python
 import streamlit as st
 import math
 import pandas as pd
+import os
 
 # Load insulin data from Excel file
-import os
-file_path = os.path.join(os.getcwd(), "Insulin_Rx.xlsx")
-df = pd.read_excel(file_path, sheet_name="Sheet1")
+file_path = os.path.join(os.path.dirname(__file__), "Insulin_Rx.xlsx")
+try:
+    df = pd.read_excel(file_path, sheet_name="Sheet1")
+except FileNotFoundError:
+    st.error("Insulin data file not found.")
+    st.stop()
 
 # Define insulin types
-STANDARD_LONG_ACTING_INSULINS = {"Tresiba", "Toujeo", "Lantus", "Basaglar", "Levemir"}  # Traditional long-acting insulins
-ULTRA_LONG_ACTING_INSULINS = {"Awiqli"}  # Awiqli is in a unique category
+STANDARD_LONG_ACTING_INSULINS = {"Tresiba", "Toujeo", "Lantus", "Basaglar", "Levemir"}
+ULTRA_LONG_ACTING_INSULINS = {"Awiqli"}
 RAPID_ACTING_INSULINS = {"Trurapi", "NovoRapid", "Humalog", "Apidra", "Fiasp"}
 
 # Process insulin data into dictionary format
@@ -20,35 +44,17 @@ RAPID_ACTING_OPTIONS = {}
 
 for _, row in df.iterrows():
     insulin_type = row["Insulin Type"]
-    
-    # Ensure concentration is not NaN before conversion
-    if pd.notna(row['Concentration u/ml']):
-        concentration = f"U-{int(row['Concentration u/ml'])}"
-    else:
-        concentration = "Unknown"  # Assign a default value for missing data
-
+    concentration = f"U-{int(row['Concentration u/ml'])}" if pd.notna(row['Concentration u/ml']) else "Unknown"
     device_type = row["Form"]
     device_capacity = row["Amount/Device"]
     
     if pd.notna(insulin_type) and pd.notna(concentration) and pd.notna(device_type) and pd.notna(device_capacity):
         if insulin_type in STANDARD_LONG_ACTING_INSULINS:
-            if insulin_type not in STANDARD_LONG_ACTING_OPTIONS:
-                STANDARD_LONG_ACTING_OPTIONS[insulin_type] = {}
-            if concentration not in STANDARD_LONG_ACTING_OPTIONS[insulin_type]:
-                STANDARD_LONG_ACTING_OPTIONS[insulin_type][concentration] = {}
-            STANDARD_LONG_ACTING_OPTIONS[insulin_type][concentration][device_type] = device_capacity
+            STANDARD_LONG_ACTING_OPTIONS.setdefault(insulin_type, {}).setdefault(concentration, {})[device_type] = device_capacity
         elif insulin_type in ULTRA_LONG_ACTING_INSULINS:
-            if insulin_type not in ULTRA_LONG_ACTING_OPTIONS:
-                ULTRA_LONG_ACTING_OPTIONS[insulin_type] = {}
-            if concentration not in ULTRA_LONG_ACTING_OPTIONS[insulin_type]:
-                ULTRA_LONG_ACTING_OPTIONS[insulin_type][concentration] = {}
-            ULTRA_LONG_ACTING_OPTIONS[insulin_type][concentration][device_type] = device_capacity
+            ULTRA_LONG_ACTING_OPTIONS.setdefault(insulin_type, {}).setdefault(concentration, {})[device_type] = device_capacity
         elif insulin_type in RAPID_ACTING_INSULINS:
-            if insulin_type not in RAPID_ACTING_OPTIONS:
-                RAPID_ACTING_OPTIONS[insulin_type] = {}
-            if concentration not in RAPID_ACTING_OPTIONS[insulin_type]:
-                RAPID_ACTING_OPTIONS[insulin_type][concentration] = {}
-            RAPID_ACTING_OPTIONS[insulin_type][concentration][device_type] = device_capacity
+            RAPID_ACTING_OPTIONS.setdefault(insulin_type, {}).setdefault(concentration, {})[device_type] = device_capacity
 
 # Streamlit UI
 st.title("Insulin Rx Guide")
@@ -58,37 +64,22 @@ is_new_rx = st.radio("Is this a new insulin prescription?", ["Yes", "No"])
 
 if is_new_rx == "Yes":
     weight = st.number_input("Enter patient weight (kg):", min_value=10, max_value=200, value=70)
-    if weight < 50:
-        tdd = round(weight * 0.2, -1)  # Weight-based dosing for <50kg, rounded to nearest 10
-    else:
-        tdd = 70  # Default starting dose for basal insulin
+    tdd = round(weight * 0.2, -1) if weight < 50 else 70
 else:
     tdd = st.number_input("Total Daily Dose (units per day)", min_value=1, value=50)
 
 col1, col2 = st.columns(2)
 with col1:
     insulin_category = st.radio("Select Insulin Category", ["Standard Long-Acting", "Ultra Long-Acting", "Rapid-Acting"])
-    if insulin_category == "Standard Long-Acting":
-        insulin_type = st.selectbox("Select Standard Long-Acting Insulin", list(STANDARD_LONG_ACTING_OPTIONS.keys()))
-    elif insulin_category == "Ultra Long-Acting":
-        insulin_type = st.selectbox("Select Ultra Long-Acting Insulin", list(ULTRA_LONG_ACTING_OPTIONS.keys()))
-    else:
-        insulin_type = st.selectbox("Select Rapid-Acting Insulin", list(RAPID_ACTING_OPTIONS.keys()))
+    insulin_type = st.selectbox("Select Insulin", list(STANDARD_LONG_ACTING_OPTIONS.keys() if insulin_category == "Standard Long-Acting" else ULTRA_LONG_ACTING_OPTIONS.keys() if insulin_category == "Ultra Long-Acting" else RAPID_ACTING_OPTIONS.keys()))
 
 with col2:
-    if insulin_category == "Standard Long-Acting":
-        concentration = st.selectbox("Select Concentration", list(STANDARD_LONG_ACTING_OPTIONS[insulin_type].keys()))
-        device_type = st.selectbox("Select Device Type", list(STANDARD_LONG_ACTING_OPTIONS[insulin_type][concentration].keys()))
-    elif insulin_category == "Ultra Long-Acting":
-        concentration = st.selectbox("Select Concentration", list(ULTRA_LONG_ACTING_OPTIONS[insulin_type].keys()))
-        device_type = st.selectbox("Select Device Type", list(ULTRA_LONG_ACTING_OPTIONS[insulin_type][concentration].keys()))
-    else:
-        concentration = st.selectbox("Select Concentration", list(RAPID_ACTING_OPTIONS[insulin_type].keys()))
-        device_type = st.selectbox("Select Device Type", list(RAPID_ACTING_OPTIONS[insulin_type][concentration].keys()))
+    options = STANDARD_LONG_ACTING_OPTIONS if insulin_category == "Standard Long-Acting" else ULTRA_LONG_ACTING_OPTIONS if insulin_category == "Ultra Long-Acting" else RAPID_ACTING_OPTIONS
+    concentration = st.selectbox("Select Concentration", list(options[insulin_type].keys()))
+    device_type = st.selectbox("Select Device Type", list(options[insulin_type][concentration].keys()))
 
 # Generate prescription wording
 prescription_text = ""
-
 if insulin_type in RAPID_ACTING_INSULINS:
     meal_dose = round(tdd / 3, -1)
     meal_range_low = max(1, round(meal_dose * 0.5, -1))
@@ -117,12 +108,12 @@ st.text_area("Suggested Prescription Wording:", prescription_text, height=220)
 with st.expander("Disclaimer"):
     st.markdown(
         """
-        **Disclaimer:** This tool is intended for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. 
-        Always consult a qualified healthcare provider before making any medical decisions. 
+        **Disclaimer:** This tool is intended for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.
+        Always consult a qualified healthcare provider before making any medical decisions.
         The authors of this tool assume no responsibility for any clinical decisions made based on the generated prescription guidance.
         """
     )
 
 st.markdown(
-    '[📄 Click here for the Diabetes Canada Insulin Prescription Guide](https://www.diabetes.ca/DiabetesCanadaWebsite/media/Managing-My-Diabetes/Tools%20and%20Resources/Insulin_Prescription_03_22.pdf?ext=.pdf)'
+    '[📄 Click here for the Diabetes Canada Insulin Prescription Guide](https://www.diabetes.ca/DiabetesCanadaWebsite/media/Managing-My-Diabetes/Tools%20and%20Resources/Insulin_Prescription_03_22.pdf)'
 )
