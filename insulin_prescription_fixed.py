@@ -74,7 +74,9 @@ if insulin_type == "Awiqli" and is_existing_insulin == "Yes":
     has_hypo_risk = st.radio("Is there a risk of hypoglycemia?", ["Yes", "No"])
 
 # Adjust titration increment for specific insulins
-if insulin_type in TWO_UNIT_TITRATION_INSULINS:
+if insulin_type == "Tresiba" and concentration == "U-200":
+    titration_increment = 2
+elif insulin_type in TWO_UNIT_TITRATION_INSULINS:
     titration_increment = 2
 else:
     titration_increment = 1
