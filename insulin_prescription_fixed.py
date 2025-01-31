@@ -44,7 +44,7 @@ st.title("Insulin Rx Guide")
 
 # User Inputs
 insulin_category = st.radio("Select Insulin Category", ["Standard Long-Acting", "Ultra Long-Acting", "Rapid-Acting"])
-is_existing_insulin = st.radio("Is patient already on a long-acting, ultra-long acting, or rapid-acting insulin?", ["Yes", "No"])
+is_existing_insulin = st.radio("Is patient already on this category of insulin?", ["Yes", "No"])
 
 if is_existing_insulin == "No":
     weight = st.number_input("Enter patient weight (kg):", min_value=10, max_value=200, value=70)
