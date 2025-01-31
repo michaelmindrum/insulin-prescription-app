@@ -27,7 +27,7 @@ for _, row in df.iterrows():
     concentration = f"U-{int(row['Concentration u/ml'])}" if pd.notna(row['Concentration u/ml']) else "Unknown"
     device_type = row["Form"]
     device_capacity = row["Amount/Device"]
-    
+
     if pd.notna(insulin_type) and pd.notna(concentration) and pd.notna(device_type) and pd.notna(device_capacity):
         if insulin_type in STANDARD_LONG_ACTING_INSULINS:
             STANDARD_LONG_ACTING_OPTIONS.setdefault(insulin_type, {}).setdefault(concentration, {})[device_type] = device_capacity
@@ -40,14 +40,6 @@ for _, row in df.iterrows():
 st.title("Insulin Rx Guide")
 
 # User Inputs
-is_new_rx = st.radio("Is this a new insulin prescription?", ["Yes", "No"])
-
-if is_new_rx == "Yes":
-    weight = st.number_input("Enter patient weight (kg):", min_value=10, max_value=200, value=70)
-    tdd = round(weight * 0.2, -1) if weight < 50 else 70
-else:
-    tdd = st.number_input("Total Daily Dose (units per day)", min_value=1, value=50)
-
 col1, col2 = st.columns(2)
 with col1:
     insulin_category = st.radio("Select Insulin Category", ["Standard Long-Acting", "Ultra Long-Acting", "Rapid-Acting"])
@@ -57,6 +49,15 @@ with col2:
     options = STANDARD_LONG_ACTING_OPTIONS if insulin_category == "Standard Long-Acting" else ULTRA_LONG_ACTING_OPTIONS if insulin_category == "Ultra Long-Acting" else RAPID_ACTING_OPTIONS
     concentration = st.selectbox("Select Concentration", list(options[insulin_type].keys()))
     device_type = st.selectbox("Select Device Type", list(options[insulin_type][concentration].keys()))
+
+is_new_rx = st.radio("Is this a new insulin prescription?", ["Yes", "No"])
+
+if is_new_rx == "Yes":
+    weight = st.number_input("Enter patient weight (kg):", min_value=10, max_value=200, value=70)
+    tdd = round(weight * 0.2, -1) if weight < 50 else 70
+else:
+    tdd_label = "Total Daily Dose of Rapid Acting Insulin" if insulin_category == "Rapid-Acting" else "Total Daily Dose of Long Acting Insulin"
+    tdd = st.number_input(tdd_label, min_value=1, value=50)
 
 # Generate prescription wording
 prescription_text = ""
