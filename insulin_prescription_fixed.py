@@ -177,7 +177,6 @@ with st.expander("App Logic Explanation"):
             - Generate the prescription text based on the calculated doses and packaging.
         """
     )
-
 st.markdown(
     '[📄 Click here for the Diabetes Canada Insulin Prescription Guide](https://www.diabetes.ca/DiabetesCanadaWebsite/media/Managing-My-Diabetes/Tools%20and%20Resources/Insulin_Prescription_03_22.pdf)'
 )
