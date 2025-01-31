@@ -44,7 +44,12 @@ st.title("Insulin Rx Guide")
 
 # User Inputs
 insulin_category = st.radio("Select Insulin Category", ["Standard Long-Acting", "Ultra Long-Acting", "Rapid-Acting"])
-is_existing_insulin = st.radio("Is patient already on this category of insulin?", ["Yes", "No"])
+
+# Determine the appropriate question based on insulin category
+if insulin_category == "Rapid-Acting":
+    is_existing_insulin = st.radio("Is the patient already on a rapid insulin?", ["Yes", "No"])
+else:
+    is_existing_insulin = st.radio("Is the patient already taking a long acting insulin?", ["Yes", "No"])
 
 if is_existing_insulin == "No":
     weight = st.number_input("Enter patient weight (kg):", min_value=10, max_value=200, value=70)
@@ -68,7 +73,6 @@ if insulin_type in TWO_UNIT_TITRATION_INSULINS:
     titration_increment = 2
 else:
     titration_increment = 1
-
 # Calculate total required insulin for 90 days
 required_units = tdd * 90
 device_capacity = options[insulin_type][concentration][device_type]
