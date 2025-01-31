@@ -17,7 +17,7 @@ ULTRA_LONG_ACTING_INSULINS = {"Awiqli"}
 RAPID_ACTING_INSULINS = {"Trurapi", "NovoRapid", "Humalog", "Apidra", "Fiasp"}
 
 # Insulins that must be titrated in 2-unit increments
-TWO_UNIT_TITRATION_INSULINS = {"Toujeo", "Tresiba U-200"}
+TWO_UNIT_TITRATION_INSULINS = {"Toujeo Doublestar", "Tresiba U-200"}
 
 # Process insulin data into dictionary format
 INSULIN_OPTIONS = {}
