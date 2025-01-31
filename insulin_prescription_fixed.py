@@ -86,22 +86,29 @@ with col2:
         concentration = st.selectbox("Select Concentration", list(RAPID_ACTING_OPTIONS[insulin_type].keys()))
         device_type = st.selectbox("Select Device Type", list(RAPID_ACTING_OPTIONS[insulin_type][concentration].keys()))
 
-# Awiqli Special Handling
-if insulin_type == "Awiqli":
-    fbg = st.number_input("Enter Fasting Blood Glucose (mmol/L):", min_value=3.0, max_value=20.0, value=7.0)
-    prior_hypo = st.radio("Has the patient experienced hypoglycemia (BG <4.0 mmol/L) in the last month?", ["Yes", "No"])
-    
-    weekly_dose = round(tdd * 7, -1)  # Total weekly dose
-    if fbg > 10.0 and prior_hypo == "No":
-        first_week_dose = round(weekly_dose * 1.5, -1)  # Apply 1.5x loading dose
-    else:
-        first_week_dose = weekly_dose
-    
-    st.write(f"Recommended starting dose for Awiqli: {first_week_dose} units for week 1, then {weekly_dose} units weekly thereafter.")
-    st.write("**Titration Guidelines:**")
-    st.write("- Increase by **+20 units/week** if fasting BG >10 mmol/L")
-    st.write("- Maintain current dose if fasting BG between **4-10 mmol/L**")
-    st.write("- Reduce by **-20 units/week** if fasting BG <4 mmol/L")
+# Generate prescription wording
+prescription_text = ""
+
+if insulin_type in RAPID_ACTING_INSULINS:
+    meal_dose = round(tdd / 3, -1)
+    meal_range_low = max(1, round(meal_dose * 0.5, -1))
+    meal_range_high = meal_dose + meal_range_low
+    prescription_text = (
+        f"Rx: {insulin_type} {concentration}\n"
+        f"Directions: Give {meal_range_low}-{meal_range_high} units before each meal, adjust based on carbohydrate intake and post-prandial glucose target (5-10 mmol/L).\n"
+    )
+elif insulin_type in STANDARD_LONG_ACTING_INSULINS:
+    prescription_text = (
+        f"Rx: {insulin_type} {concentration}\n"
+        f"Directions: Start at {tdd} units at bedtime. Increase by 1 unit/day until fasting BG reaches 4-7 mmol/L.\n"
+    )
+elif insulin_type in ULTRA_LONG_ACTING_INSULINS:
+    prescription_text = (
+        f"Rx: {insulin_type} {concentration}\n"
+        f"Directions: Start at {tdd * 7} units weekly. Adjust by ±20 units/week based on fasting BG.\n"
+    )
+
+st.text_area("Suggested Prescription Wording:", prescription_text, height=220)
 
 # Disclaimer in a dropdown
 with st.expander("Disclaimer"):
@@ -116,4 +123,3 @@ with st.expander("Disclaimer"):
 st.markdown(
     '[📄 Click here for the Diabetes Canada Insulin Prescription Guide](https://www.diabetes.ca/DiabetesCanadaWebsite/media/Managing-My-Diabetes/Tools%20and%20Resources/Insulin_Prescription_03_22.pdf?ext=.pdf)'
 )
-
