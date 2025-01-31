@@ -134,7 +134,6 @@ elif insulin_type in ULTRA_LONG_ACTING_INSULINS:
         f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
         f"Duration: 90 days (3-month supply)\n"
     )
-    )
 elif insulin_type in ULTRA_LONG_ACTING_INSULINS:
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
