@@ -16,6 +16,9 @@ STANDARD_LONG_ACTING_INSULINS = {"Tresiba", "Toujeo", "Lantus", "Basaglar", "Lev
 ULTRA_LONG_ACTING_INSULINS = {"Awiqli"}
 RAPID_ACTING_INSULINS = {"Trurapi", "NovoRapid", "Humalog", "Apidra", "Fiasp"}
 
+# Insulins that must be titrated in 2-unit increments
+TWO_UNIT_TITRATION_INSULINS = {"Toujeo", "Tresiba U-200"}
+
 # Process insulin data into dictionary format
 INSULIN_OPTIONS = {}
 STANDARD_LONG_ACTING_OPTIONS = {}
@@ -50,6 +53,12 @@ device_type = st.radio("Select Device Type", list(options[insulin_type][concentr
 tdd_label = "Total Daily Dose of Rapid Acting Insulin" if insulin_category == "Rapid-Acting" else "Total Daily Dose of Long Acting Insulin"
 tdd = st.number_input(tdd_label, min_value=1, value=50)
 
+# Adjust titration increment for specific insulins
+if insulin_type in TWO_UNIT_TITRATION_INSULINS:
+    titration_increment = 2
+else:
+    titration_increment = 1
+
 # Calculate total required insulin for 90 days
 required_units = tdd * 90
 device_capacity = options[insulin_type][concentration][device_type]
@@ -78,7 +87,7 @@ if insulin_type in RAPID_ACTING_INSULINS:
 elif insulin_type in STANDARD_LONG_ACTING_INSULINS:
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
-        f"Directions: Start at {tdd} units at bedtime. Increase by 1 unit/day until fasting BG reaches 4-7 mmol/L.\n"
+        f"Directions: Start at {tdd} units at bedtime. Increase by {titration_increment} unit/day until fasting BG reaches 4-7 mmol/L.\n"
         f"Quantity: {required_units} units total\n"
         f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
         f"Duration: 90 days (3-month supply)\n"
