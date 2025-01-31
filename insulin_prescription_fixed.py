@@ -141,3 +141,7 @@ with st.expander("Disclaimer"):
         The authors of this tool assume no responsibility for any clinical decisions made based on the generated prescription guidance.
         """
     )
+
+st.markdown(
+    '[📄 Click here for the Diabetes Canada Insulin Prescription Guide](https://www.diabetes.ca/DiabetesCanadaWebsite/media/Managing-My-Diabetes/Tools%20and%20Resources/Insulin_Prescription_03_22.pdf?ext=.pdf)'
+)
