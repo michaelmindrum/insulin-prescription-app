@@ -76,7 +76,7 @@ if insulin_type == "Awiqli" and is_existing_insulin == "Yes":
 # Adjust titration increment for specific insulins
 if insulin_type == "Tresiba" and concentration == "U-200":
     titration_increment = 2
-if insulin_type == "Toujeo" and select device type = "Doublestar":
+if insulin_type == "Toujeo" and device_type = "Doublestar":
     titration_increment = 2 
 elif insulin_type in TWO_UNIT_TITRATION_INSULINS:
     titration_increment = 2
