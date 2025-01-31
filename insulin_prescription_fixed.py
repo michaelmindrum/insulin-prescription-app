@@ -52,12 +52,13 @@ else:
     is_existing_insulin = st.radio("Is the patient already taking a long acting insulin?", ["Yes", "No"])
 
 if is_existing_insulin == "No":
-    weight = st.number_input("Enter patient weight (kg):", min_value=10, max_value=200, value=70)
     if insulin_category == "Ultra Long-Acting":
         tdd = 70  # Awiqli starts at 70 units weekly
     elif insulin_category == "Rapid-Acting":
+        weight = st.number_input("Enter patient weight (kg):", min_value=10, max_value=200, value=70)
         tdd = round(weight * 0.2, -1)  # Weight-based dosing, rounded to nearest 10
     else:
+        weight = st.number_input("Enter patient weight (kg):", min_value=10, max_value=200, value=70)
         tdd = round(weight * 0.2, -1)  # Standard long-acting insulin weight-based
 else:
     tdd_label = "Total Daily Dose of Rapid Acting Insulin" if insulin_category == "Rapid-Acting" else "Total Daily Dose of Long Acting Insulin"
