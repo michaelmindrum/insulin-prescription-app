@@ -105,7 +105,10 @@ elif insulin_type in STANDARD_LONG_ACTING_INSULINS:
 elif insulin_type in ULTRA_LONG_ACTING_INSULINS:
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
-        f"Directions: Start at {tdd * 7} units weekly. Adjust by ±20 units/week based on fasting BG.\n"
+        f"Directions: Start at 70 units weekly if new prescription.\n"
+        f"If transitioning from basal insulin, use TDD x 7 weekly.\n"
+        f"If FBG >10 mmol/L and no hypoglycemia risk, start with 1.5 x TDD x 7 for the first week, then resume TDD x 7.\n"
+        f"Adjust dose by ±20 units/week based on fasting BG.\n"
     )
 
 st.text_area("Suggested Prescription Wording:", prescription_text, height=220)
