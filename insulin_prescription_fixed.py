@@ -40,15 +40,12 @@ for _, row in df.iterrows():
 st.title("Insulin Rx Guide")
 
 # User Inputs
-col1, col2 = st.columns(2)
-with col1:
-    insulin_category = st.radio("Select Insulin Category", ["Standard Long-Acting", "Ultra Long-Acting", "Rapid-Acting"])
-    insulin_type = st.selectbox("Select Insulin", list(STANDARD_LONG_ACTING_OPTIONS.keys() if insulin_category == "Standard Long-Acting" else ULTRA_LONG_ACTING_OPTIONS.keys() if insulin_category == "Ultra Long-Acting" else RAPID_ACTING_OPTIONS.keys()))
+insulin_category = st.radio("Select Insulin Category", ["Standard Long-Acting", "Ultra Long-Acting", "Rapid-Acting"])
+insulin_type = st.radio("Select Insulin", list(STANDARD_LONG_ACTING_OPTIONS.keys() if insulin_category == "Standard Long-Acting" else ULTRA_LONG_ACTING_OPTIONS.keys() if insulin_category == "Ultra Long-Acting" else RAPID_ACTING_OPTIONS.keys()))
 
-with col2:
-    options = STANDARD_LONG_ACTING_OPTIONS if insulin_category == "Standard Long-Acting" else ULTRA_LONG_ACTING_OPTIONS if insulin_category == "Ultra Long-Acting" else RAPID_ACTING_OPTIONS
-    concentration = st.selectbox("Select Concentration", list(options[insulin_type].keys()))
-    device_type = st.selectbox("Select Device Type", list(options[insulin_type][concentration].keys()))
+options = STANDARD_LONG_ACTING_OPTIONS if insulin_category == "Standard Long-Acting" else ULTRA_LONG_ACTING_OPTIONS if insulin_category == "Ultra Long-Acting" else RAPID_ACTING_OPTIONS
+concentration = st.radio("Select Concentration", list(options[insulin_type].keys()))
+device_type = st.radio("Select Device Type", list(options[insulin_type][concentration].keys()))
 
 is_new_rx = st.radio("Is this a new insulin prescription?", ["Yes", "No"])
 
