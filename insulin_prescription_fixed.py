@@ -154,6 +154,29 @@ with st.expander("Disclaimer"):
         The authors of this tool assume no responsibility for any clinical decisions made based on the generated prescription guidance.
         """
     )
+# App logic explanation in a dropdown
+with st.expander("App Logic Explanation"):
+    st.markdown(
+        """
+        **App Logic:**
+        1. **User Inputs:**
+            - Insulin Category: Standard Long-Acting, Ultra Long-Acting, Rapid-Acting
+            - Existing Insulin Usage: Yes/No
+            - Patient Weight (if applicable)
+            - Total Daily Dose (TDD) calculation based on weight or user input
+        2. **Insulin Type Selection:**
+            - Based on the selected category, the user selects the specific insulin type, concentration, and device type.
+        3. **Titration Increment Adjustment:**
+            - Specific insulins have a 2-unit titration increment.
+        4. **Dose Calculations:**
+            - Rapid-Acting Insulin: Meal dose, snack dose, total required units for 90 days
+            - Standard Long-Acting Insulin: Starting dose, titration increments, total required units for 90 days
+            - Ultra Long-Acting Insulin: Starting dose for Awiqli users, weekly unit requirements, total required units for 90 days
+        5. **Packaging and Prescription Generation:**
+            - Calculate the number of devices needed based on device capacity and required units.
+            - Generate the prescription text based on the calculated doses and packaging.
+        """
+    )
 
 st.markdown(
     '[📄 Click here for the Diabetes Canada Insulin Prescription Guide](https://www.diabetes.ca/DiabetesCanadaWebsite/media/Managing-My-Diabetes/Tools%20and%20Resources/Insulin_Prescription_03_22.pdf)'
