@@ -47,14 +47,20 @@ options = STANDARD_LONG_ACTING_OPTIONS if insulin_category == "Standard Long-Act
 concentration = st.radio("Select Concentration", list(options[insulin_type].keys()))
 device_type = st.radio("Select Device Type", list(options[insulin_type][concentration].keys()))
 
-is_new_rx = st.radio("Is this a new insulin prescription?", ["Yes", "No"])
+tdd_label = "Total Daily Dose of Rapid Acting Insulin" if insulin_category == "Rapid-Acting" else "Total Daily Dose of Long Acting Insulin"
+tdd = st.number_input(tdd_label, min_value=1, value=50)
 
-if is_new_rx == "Yes":
-    weight = st.number_input("Enter patient weight (kg):", min_value=10, max_value=200, value=70)
-    tdd = round(weight * 0.2, -1) if weight < 50 else 70
+# Calculate total required insulin for 90 days
+required_units = tdd * 90
+device_capacity = options[insulin_type][concentration][device_type]
+n_devices = math.ceil(required_units / device_capacity)
+
+# Determine packaging
+if "Pen" in device_type or "Cartridge" in device_type:
+    box_size = 5
+    boxes_needed = math.ceil(n_devices / box_size)
 else:
-    tdd_label = "Total Daily Dose of Rapid Acting Insulin" if insulin_category == "Rapid-Acting" else "Total Daily Dose of Long Acting Insulin"
-    tdd = st.number_input(tdd_label, min_value=1, value=50)
+    boxes_needed = n_devices  # Vials are individual, no boxes
 
 # Generate prescription wording
 prescription_text = ""
@@ -65,19 +71,28 @@ if insulin_type in RAPID_ACTING_INSULINS:
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
         f"Directions: Give {meal_range_low}-{meal_range_high} units before each meal, adjust based on carbohydrate intake and post-prandial glucose target (5-10 mmol/L).\n"
+        f"Quantity: {required_units} units total\n"
+        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
+        f"Duration: 90 days (3-month supply)\n"
     )
 elif insulin_type in STANDARD_LONG_ACTING_INSULINS:
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
         f"Directions: Start at {tdd} units at bedtime. Increase by 1 unit/day until fasting BG reaches 4-7 mmol/L.\n"
+        f"Quantity: {required_units} units total\n"
+        f"Dispense: {boxes_needed} boxes of {device_type.lower()}(s)\n"
+        f"Duration: 90 days (3-month supply)\n"
     )
 elif insulin_type in ULTRA_LONG_ACTING_INSULINS:
+    awiqli_dose = 70 if tdd == 50 else tdd * 7  # Ensure new Rx starts at 70 units
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
-        f"Directions: Start at 70 units weekly if new prescription.\n"
+        f"Directions: Start at {awiqli_dose} units weekly if new prescription.\n"
         f"If transitioning from basal insulin, use TDD x 7 weekly.\n"
         f"If FBG >10 mmol/L and no hypoglycemia risk, start with 1.5 x TDD x 7 for the first week, then resume TDD x 7.\n"
         f"Adjust dose by ±20 units/week based on fasting BG.\n"
+        f"Dispense: One 3 mL pen per {awiqli_dose} units weekly, rounded up as needed\n"
+        f"Duration: 90 days (3-month supply)\n"
     )
 
 st.text_area("Suggested Prescription Wording:", prescription_text, height=220)
