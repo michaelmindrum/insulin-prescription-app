@@ -44,14 +44,24 @@ st.title("Insulin Rx Guide")
 
 # User Inputs
 insulin_category = st.radio("Select Insulin Category", ["Standard Long-Acting", "Ultra Long-Acting", "Rapid-Acting"])
-insulin_type = st.radio("Select Insulin", list(STANDARD_LONG_ACTING_OPTIONS.keys() if insulin_category == "Standard Long-Acting" else ULTRA_LONG_ACTING_OPTIONS.keys() if insulin_category == "Ultra Long-Acting" else RAPID_ACTING_OPTIONS.keys()))
+is_existing_insulin = st.radio("Is patient already on a long-acting, ultra-long acting, or rapid-acting insulin?", ["Yes", "No"])
 
+if is_existing_insulin == "No":
+    weight = st.number_input("Enter patient weight (kg):", min_value=10, max_value=200, value=70)
+    if insulin_category == "Ultra Long-Acting":
+        tdd = 70  # Awiqli starts at 70 units weekly
+    elif insulin_category == "Rapid-Acting":
+        tdd = round(weight * 0.2, -1)  # Weight-based dosing, rounded to nearest 10
+    else:
+        tdd = round(weight * 0.2, -1)  # Standard long-acting insulin weight-based
+else:
+    tdd_label = "Total Daily Dose of Rapid Acting Insulin" if insulin_category == "Rapid-Acting" else "Total Daily Dose of Long Acting Insulin"
+    tdd = st.number_input(tdd_label, min_value=1, value=50)
+
+insulin_type = st.radio("Select Insulin", list(STANDARD_LONG_ACTING_OPTIONS.keys() if insulin_category == "Standard Long-Acting" else ULTRA_LONG_ACTING_OPTIONS.keys() if insulin_category == "Ultra Long-Acting" else RAPID_ACTING_OPTIONS.keys()))
 options = STANDARD_LONG_ACTING_OPTIONS if insulin_category == "Standard Long-Acting" else ULTRA_LONG_ACTING_OPTIONS if insulin_category == "Ultra Long-Acting" else RAPID_ACTING_OPTIONS
 concentration = st.radio("Select Concentration", list(options[insulin_type].keys()))
 device_type = st.radio("Select Device Type", list(options[insulin_type][concentration].keys()))
-
-tdd_label = "Total Daily Dose of Rapid Acting Insulin" if insulin_category == "Rapid-Acting" else "Total Daily Dose of Long Acting Insulin"
-tdd = st.number_input(tdd_label, min_value=1, value=50)
 
 # Adjust titration increment for specific insulins
 if insulin_type in TWO_UNIT_TITRATION_INSULINS:
@@ -93,14 +103,11 @@ elif insulin_type in STANDARD_LONG_ACTING_INSULINS:
         f"Duration: 90 days (3-month supply)\n"
     )
 elif insulin_type in ULTRA_LONG_ACTING_INSULINS:
-    awiqli_dose = 70 if tdd == 50 else tdd * 7  # Ensure new Rx starts at 70 units
     prescription_text = (
         f"Rx: {insulin_type} {concentration}\n"
-        f"Directions: Start at {awiqli_dose} units weekly if new prescription.\n"
-        f"If transitioning from basal insulin, use TDD x 7 weekly.\n"
-        f"If FBG >10 mmol/L and no hypoglycemia risk, start with 1.5 x TDD x 7 for the first week, then resume TDD x 7.\n"
+        f"Directions: Start at {tdd} units weekly if new prescription.\n"
         f"Adjust dose by ±20 units/week based on fasting BG.\n"
-        f"Dispense: One 3 mL pen per {awiqli_dose} units weekly, rounded up as needed\n"
+        f"Dispense: One 3 mL pen per {tdd} units weekly, rounded up as needed\n"
         f"Duration: 90 days (3-month supply)\n"
     )
 
